@@ -1,0 +1,21 @@
+ccimport==0.4.2
+certifi @ file:///opt/conda/conda-bld/certifi_1655968806487/work/certifi
+charset-normalizer==3.0.1
+cumm-cu113==0.4.5
+fire==0.5.0
+idna==3.4
+lark==1.1.5
+MinkowskiEngine==0.5.4
+ninja==1.11.1
+numpy==1.24.1
+pccm==0.4.4
+portalocker==2.7.0
+pybind11==2.10.3
+requests==2.28.2
+six==1.16.0
+spconv-cu113==2.3.2
+termcolor==2.2.0
+torch==1.12.1+cu113
+torchsparse @ git+https://github.com/mit-han-lab/torchsparse.git@74099d10a51c71c14318bce63d6421f698b24f24
+typing_extensions==4.4.0
+urllib3==1.26.14
