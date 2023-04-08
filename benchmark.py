@@ -15,12 +15,13 @@ import torchsparse.nn as nn
 
 def get_config():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--num_iters", type=int, default=10)
+    parser.add_argument("-n", "--num_iters", type=int, default=10)
     parser.add_argument("--batch_size", type=int, default=8)
     parser.add_argument("--out_channels", type=int, default=16)
     parser.add_argument("--kernel_size", type=int, default=3)
     parser.add_argument("--voxel_size", type=float, default=0.02)
     parser.add_argument("--mode", type=str, default="mink", choices=["mink", "spconv", "tsp", "o3d"])
+    parser.add_argument("--net_mode", type=str, default="single", choices=["single", "cylinder"])
     return parser.parse_args()
 
 
@@ -33,6 +34,36 @@ def get_conv(inc, outc, kernel_size, mode="mink"):
         return nn.Conv3d(inc, outc, kernel_size=kernel_size)
     else:
         raise NotImplementedError("Open3D is not supported yet.")
+    
+
+def get_cylinder(inc, outc, kernel_size, num_blocks=8, mode="mink"):
+    seq_cls_dict = {
+        "mink": torch.nn.Sequential,
+        "spconv": spconv.SparseSequential,
+        "tsp": torch.nn.Sequential,
+    }
+    norm_cls_dict = {
+        "mink": ME.MinkowskiBatchNorm,
+        "spconv": torch.nn.BatchNorm1d,
+        "tsp": nn.BatchNorm,
+    }
+    act_cls_dict = {
+        "mink": ME.MinkowskiReLU,
+        "spconv": torch.nn.ReLU,
+        "tsp": nn.ReLU,
+    }
+
+    seq_cls = seq_cls_dict[mode]
+    norm_cls = norm_cls_dict[mode]
+    act_cls = act_cls_dict[mode]
+
+    layers = [get_conv(inc, outc, kernel_size, mode=mode), norm_cls(outc), act_cls(True)]
+    for _ in range(num_blocks - 1):
+        layers.extend([
+            get_conv(outc, outc, kernel_size, mode=mode), norm_cls(outc), act_cls(True)
+        ])
+
+    return seq_cls(*layers)
 
 
 def get_sparse_tensor(coords, feats, batch_size, mode="mink"):
@@ -77,21 +108,26 @@ if __name__ == "__main__":
         [torch.from_numpy(dcolors).float() for i in range(batch_size)], 0
     ).to(device)
 
-    conv = get_conv(3, cfg.out_channels, cfg.kernel_size, cfg.mode).to(device)
+    if cfg.net_mode == "single":
+        net = get_conv(3, cfg.out_channels, cfg.kernel_size, cfg.mode).to(device)
+    elif cfg.net_mode == "cylinder":
+        net = get_cylinder(3, cfg.out_channels, cfg.kernel_size, mode=cfg.mode).to(device)
+    else:
+        raise NotImplementedError("UNet is not supported yet.")
 
     ts = np.zeros(cfg.num_iters)
     outputs = []
     for i in range(len(ts)):
         c = time.time()
         stensor = get_sparse_tensor(bcoords, bcolors, batch_size=batch_size, mode=cfg.mode)
-        output = conv(stensor)
+        output = net(stensor)
         ts[i] = time.time() - c
         outputs.append(output)
-    print(f"Forward Min time (ms) for {cfg.mode}: {1000 * np.min(ts)} for size {len(bcoords)} sparse tensor")
+    print(f"Forward min time (ms) for {cfg.mode}: {1000 * np.min(ts)} for size {len(bcoords)} sparse tensor")
 
     for i, output in enumerate(outputs):
         loss = output.features.sum() if hasattr(output, "features") else output.F.sum()
         c = time.time()
         loss.backward()
         ts[i] = time.time() - c
-    print(f"Backward Min time (ms) for {cfg.mode}: {1000 * np.min(ts)} for size {len(bcoords)} sparse tensor")
+    print(f"Backward min time (ms) for {cfg.mode}: {1000 * np.min(ts)} for size {len(bcoords)} sparse tensor")

@@ -30,7 +30,21 @@ Benchmarking various sparse convolution libraries: MinkowskiEngine, SpConv, Torc
 - mixed precision support
 
 ### Benchmark results
+Each forward/backward time is the minimum time of 10 trials.
+#### 1. Sample data (1,296,440 points) & Single convolution layer
+| Library         | Forward Time (ms) | Backward Time (ms) |
+|:----------------|------------------:|-------------------:|
+| MinkowskiEngine | 14.879 | 10.764 |
+| SpConv          |  8.764 |  0.492 |
+| TorchSparse     | 29.397 |  7.705 |
 
+#### 2. Sample data (1,296,440 points) & Cylindrical network (no down/up sampling)
+The cylindrical network is a stack of eight conv-bn-relu blocks.
+| Library         | Forward Time (ms) | Backward Time (ms) |
+|:----------------|------------------:|-------------------:|
+| MinkowskiEngine | 49.448 | 67.557 |
+| SpConv          | 24.142 |  3.119 |
+| TorchSparse     | 146.081 | 132.985 |
 
 ### Todos
 - [ ] Benchmark results with a more complex networks (e.g., UNet).
