@@ -15,41 +15,32 @@ import torchsparse.nn as nn
 
 def get_config():
     parser = argparse.ArgumentParser()
+    parser.add_argument("--num_iters", type=int, default=10)
     parser.add_argument("--batch_size", type=int, default=8)
     parser.add_argument("--out_channels", type=int, default=16)
-    parser.add_argument("--stride", type=int, default=1)
     parser.add_argument("--kernel_size", type=int, default=3)
     parser.add_argument("--voxel_size", type=float, default=0.02)
     parser.add_argument("--mode", type=str, default="mink", choices=["mink", "spconv", "tsp", "o3d"])
-
     return parser.parse_args()
 
 
-def get_conv(inc, outc, kernel_size, stride, mode="mink"):
+def get_conv(inc, outc, kernel_size, mode="mink"):
     if mode == "mink":
-        return ME.MinkowskiConvolution(
-            inc, outc, kernel_size=kernel_size, stride=stride, dimension=3
-        )
+        return ME.MinkowskiConvolution(inc, outc, kernel_size=kernel_size, dimension=3)
     elif mode == "spconv":
-        return spconv.SparseConv3d(
-            inc, outc, kernel_size=kernel_size, stride=stride
-        ) # TODO: check out other algorithms
+        return spconv.SubMConv3d(inc, outc, kernel_size=kernel_size, indice_key="subm0")
     elif mode == "tsp":
-        return nn.Conv3d(inc, outc, kernel_size=kernel_size, stride=stride)
+        return nn.Conv3d(inc, outc, kernel_size=kernel_size)
     else:
         raise NotImplementedError("Open3D is not supported yet.")
 
 
 def get_sparse_tensor(coords, feats, batch_size, mode="mink"):
     if mode == "mink":
-        return ME.SparseTensor(
-            feats, coords, minkowski_algorithm=ME.MinkowskiAlgorithm.SPEED_OPTIMIZED,
-        )
+        return ME.SparseTensor(feats, coords, minkowski_algorithm=ME.MinkowskiAlgorithm.SPEED_OPTIMIZED)
     elif mode == "spconv":
         spatial_shape = coords[:, 1:].max(dim=0)[0] - coords[:, 1:].min(dim=0)[0] + 1
-        return spconv.SparseConvTensor(
-            feats, coords, spatial_shape, batch_size
-        )
+        return spconv.SparseConvTensor(feats, coords, spatial_shape, batch_size)
     elif mode == "tsp":
         return tsp.SparseTensor(feats, coords, stride=1)
     else:
@@ -71,6 +62,9 @@ def load_file(file_name):
 
 
 if __name__ == "__main__":
+    torch.backends.cuda.matmul.allow_tf32 = True
+    torch.backends.cudnn.benchmark = True
+
     cfg = get_config()
     batch_size = cfg.batch_size
     device = "cuda:0" if torch.cuda.is_available() else "cpu"
@@ -83,26 +77,21 @@ if __name__ == "__main__":
         [torch.from_numpy(dcolors).float() for i in range(batch_size)], 0
     ).to(device)
 
-    # conv = get_conv(3, cfg.out_channels, kernel_size=cfg.kernel_size, stride=cfg.stride, mode=cfg.mode).to(device)
-    conv = torch.nn.Sequential(
-        get_conv(3, cfg.out_channels, kernel_size=cfg.kernel_size, stride=cfg.stride, mode=cfg.mode),
-        get_conv(cfg.out_channels, cfg.out_channels, kernel_size=cfg.kernel_size, stride=cfg.stride, mode=cfg.mode),
-        get_conv(cfg.out_channels, cfg.out_channels, kernel_size=cfg.kernel_size, stride=cfg.stride, mode=cfg.mode),
-        get_conv(cfg.out_channels, cfg.out_channels, kernel_size=cfg.kernel_size, stride=cfg.stride, mode=cfg.mode),
-        get_conv(cfg.out_channels, cfg.out_channels, kernel_size=cfg.kernel_size, stride=cfg.stride, mode=cfg.mode)
-    ).to(device)
+    conv = get_conv(3, cfg.out_channels, cfg.kernel_size, cfg.mode).to(device)
 
-    ts = np.zeros(10)
-    for i in range(10):
+    ts = np.zeros(cfg.num_iters)
+    outputs = []
+    for t in ts:
         c = time.time()
         stensor = get_sparse_tensor(bcoords, bcolors, batch_size=batch_size, mode=cfg.mode)
         output = conv(stensor)
-        ts[i] = time.time() - c
-    print(f"Forward Min time for {cfg.mode}: {np.min(ts)} for size {len(bcoords)} sparse tensor")
+        t = time.time() - c
+        outputs.append(output)
+    print(f"Forward Min time (ms) for {cfg.mode}: {1000 * np.min(ts)} for size {len(bcoords)} sparse tensor")
 
-    # loss = output.features.sum() if hasattr(output, "features") else output.F.sum()
-    # for i in range(10):
-    #     c = time.time()
-    #     loss.backward(retain_graph=True)
-    #     ts[i] = time.time() - c
-    # print(f"Backward Min time for {cfg.mode} {conv}: {np.min(ts)} for size {len(bcoords)} sparse tensor")
+    for i, output in enumerate(outputs):
+        loss = output.features.sum() if hasattr(output, "features") else output.F.sum()
+        c = time.time()
+        loss.backward()
+        ts[i] = time.time() - c
+    print(f"Backward Min time (ms) for {cfg.mode}: {1000 * np.min(ts)} for size {len(bcoords)} sparse tensor")

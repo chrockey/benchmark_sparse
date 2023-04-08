@@ -32,10 +32,10 @@ Benchmarking various sparse convolution libraries: MinkowskiEngine, SpConv, Torc
 ### Benchmark results
 
 
-### todos
-- [ ] Benchmark results on real datasets (e.g. ScanNet, S3DIS, ShapeNet, ModelNet).
+### Todos
+- [ ] Benchmark results with a more complex networks (e.g., UNet).
 - [ ] Benchmark the actual training time of ResNet, using each library.
-- [ ] Add Open3D.
+- [ ] Add Open3D's sparse convolution.
 
 
 ### Acknowlegement
