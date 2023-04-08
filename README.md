@@ -34,8 +34,8 @@ However, it is worth noting that MinkowskiEngine supports a lot of useful fuctio
 | Library         | Mixed Precision Training |
 |:----------------|:------------------------:|
 | MinkowskiEngine |  |
-| SpConv          | :heavy_check_mark: |
-| TorchSparse     |  |
+| SpConv          | :white_check_mark: |
+| TorchSparse     | :white_check_mark: |
 
 
 ### Benchmark results
