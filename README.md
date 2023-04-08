@@ -4,12 +4,26 @@ Benchmarking various sparse convolution libraries: MinkowskiEngine, SpConv, Torc
 
 ### Environments
 - A6000 GPU
-- Ubuntu 20.04
-- CUDA 11.3
-- PyTorch 1.12.1
-- SpConv v2.3.2
+- Ubuntu 22.04
+- CUDA 11.7
+- PyTorch 2.0.0
+- SpConv v2.3.5
 - MinkowskiEngine v0.5.4
 - TorchSparse v1.4.0
+- libsparsehash-dev # apt-get install libsparsehash-dev
+
+
+### Installation
+```bash
+~/benchmark_sparse$ conda create -n bench python=3.8 -y
+~/benchmark_sparse$ conda activate bench
+(bench) ~/benchmark_sparse$ pip install torch ninja open3d
+(bench) ~/benchmark_sparse$ pip install spconv-cu117
+(bench) ~/benchmark_sparse$ pip install -U git+https://github.com/NVIDIA/MinkowskiEngine -v --no-deps \
+                                                                                            --install-option="--blas_include_dirs=${CONDA_PREFIX}/include" \
+                                                                                            --install-option="--blas=openblas"
+(bench) ~/benchmark_sparse$ pip install --upgrade git+https://github.com/mit-han-lab/torchsparse.git@v1.4.0
+```
 
 ### Comparsion
 - tf32 support
@@ -19,7 +33,6 @@ Benchmarking various sparse convolution libraries: MinkowskiEngine, SpConv, Torc
 
 
 ### todos
-- [ ] CUDA 11.4: According to [SpConv news](https://github.com/traveller59/spconv), SpConv with CUDA >=11.4 is much faster than CUDA <11.4.
 - [ ] Benchmark results on real datasets (e.g. ScanNet, S3DIS, ShapeNet, ModelNet).
 - [ ] Benchmark the actual training time of ResNet, using each library.
 - [ ] Add Open3D.
