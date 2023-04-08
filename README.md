@@ -31,8 +31,12 @@ However, it is worth noting that MinkowskiEngine supports a lot of useful fuctio
 ```
 
 ### Comparsion
-- tf32 support
-- mixed precision support
+| Library         | Mixed Precision Training |
+|:----------------|:------------------------:|
+| MinkowskiEngine |  |
+| SpConv          | :heavy_check_mark: |
+| TorchSparse     |  |
+
 
 ### Benchmark results
 Each forward/backward time is the minimum time of 10 trials.
