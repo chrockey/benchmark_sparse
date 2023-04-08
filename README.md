@@ -1,6 +1,11 @@
 ## Benchmark of sparse convolution libraries
 Benchmarking various sparse convolution libraries: MinkowskiEngine, SpConv, TorchSparse, and Open3D.
 
+## Conclusion
+For now, the benchmark results show that SpConv is the fastest sparse conovlution library among MinkowskiEngine, SpConv, and TorchSparse.
+Although a more complicated and pratical benchmarking is required, the results seem to be obvious.
+However, it is worth noting that MinkowskiEngine supports a lot of useful fuctionalities (e.g., Splatting).
+
 
 ### Environments
 - A6000 GPU
