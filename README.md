@@ -4,7 +4,7 @@ Benchmarking various sparse convolution libraries: MinkowskiEngine, SpConv, Torc
 ## Conclusion
 For now, the benchmark results show that SpConv is the fastest sparse conovlution library among MinkowskiEngine, SpConv, and TorchSparse.
 Although a more complicated and pratical benchmarking is required, the results seem to be obvious.
-However, it is worth noting that MinkowskiEngine supports a lot of useful fuctionalities (e.g., Splatting).
+However, it is worth noting that MinkowskiEngine supports a lot of useful fuctionalities (e.g., TensorField).
 
 
 ### Environments
@@ -31,11 +31,11 @@ However, it is worth noting that MinkowskiEngine supports a lot of useful fuctio
 ```
 
 ### Comparsion
-| Library         | Mixed Precision Training |
-|:----------------|:------------------------:|
-| MinkowskiEngine |  |
-| SpConv          | :white_check_mark: |
-| TorchSparse     | :white_check_mark: |
+| Library         | Voxelization | Mixed Precision Training |
+|:----------------|:------------:|:------------------------:|
+| MinkowskiEngine | :white_check_mark: |  |
+| SpConv          | :white_check_mark: | :white_check_mark: |
+| TorchSparse     | :white_check_mark: | :white_check_mark: |
 
 
 ### Benchmark results
@@ -56,8 +56,8 @@ The cylindrical network is a stack of eight conv-bn-relu blocks.
 | TorchSparse     | 146.081 | 132.985 |
 
 ### Todos
-- [ ] Benchmark results with a more complex networks (e.g., UNet).
-- [ ] Benchmark the actual training time of ResNet, using each library.
+- [ ] Benchmark results with a more complex network (e.g., UNet).
+- [ ] Benchmark the actual training time of the network on 3D semantic segmentation task.
 - [ ] Add Open3D's sparse convolution.
 
 
