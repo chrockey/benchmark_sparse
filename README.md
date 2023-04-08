@@ -1,12 +1,6 @@
 ## Benchmark of sparse convolution libraries
 Benchmarking various sparse convolution libraries: MinkowskiEngine, SpConv, TorchSparse, and Open3D.
 
-## Conclusion
-For now, the benchmark results show that SpConv is the fastest sparse conovlution library among MinkowskiEngine, SpConv, and TorchSparse.
-Although a more complicated and pratical benchmarking is required, the results seem to be obvious.
-However, it is worth noting that MinkowskiEngine supports a lot of useful fuctionalities (e.g., TensorField).
-
-
 ### Environments
 - A6000 GPU
 - Ubuntu 22.04
@@ -54,6 +48,12 @@ The cylindrical network is a stack of eight conv-bn-relu blocks.
 | MinkowskiEngine | 49.448 | 67.557 |
 | SpConv          | 24.142 |  3.119 |
 | TorchSparse     | 146.081 | 132.985 |
+
+
+### Conclusion
+For now, the benchmark results show that SpConv is the fastest sparse conovlution library among MinkowskiEngine, SpConv, and TorchSparse.
+Although a more complicated and pratical benchmarking is required, the results seem to be obvious.
+However, it is worth noting that MinkowskiEngine supports a lot of useful fuctionalities (e.g., TensorField).
 
 ### Todos
 - [ ] Benchmark results with a more complex network (e.g., UNet).
