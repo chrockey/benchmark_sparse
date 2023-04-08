@@ -81,11 +81,11 @@ if __name__ == "__main__":
 
     ts = np.zeros(cfg.num_iters)
     outputs = []
-    for t in ts:
+    for i in range(len(ts)):
         c = time.time()
         stensor = get_sparse_tensor(bcoords, bcolors, batch_size=batch_size, mode=cfg.mode)
         output = conv(stensor)
-        t = time.time() - c
+        ts[i] = time.time() - c
         outputs.append(output)
     print(f"Forward Min time (ms) for {cfg.mode}: {1000 * np.min(ts)} for size {len(bcoords)} sparse tensor")
 
