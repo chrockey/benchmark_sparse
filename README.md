@@ -1,5 +1,5 @@
 ## Benchmark of sparse convolution libraries
-Benchmarking various sparse convolution libraries: MinkowskiEngine, SpConv, TorchSparse, and Open3D.
+Benchmarking various sparse convolution libraries: [MinkowskiEngine](https://github.com/NVIDIA/MinkowskiEngine), [SpConv](https://github.com/traveller59/spconv), [TorchSparse](https://github.com/mit-han-lab/torchsparse), and [Open3D](https://github.com/isl-org/Open3D).
 
 ### Environments
 - A6000 GPU
