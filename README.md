@@ -53,15 +53,14 @@ The cylindrical network is a stack of eight conv-bn-relu blocks.
 I measured the average time of training iterations (forward + backward) of MinkowskiNet42 on ScanNetV2 (3D semantic segmentation) with voxel size of 2cm and batch size of 8.
 | Library         | Average time (sec/iter) |
 |:----------------|------------------------:|
-| MinkowskiEngine | 2.51 |
-| SpConv          | 2.40 |
+| MinkowskiEngine | 1.51 |
+| SpConv          | 0.81 |
 
 
 ### Conclusion
 For now, the simple benchmark results show that SpConv is the fastest sparse conovlution library among MinkowskiEngine, SpConv, and TorchSparse.
-However, the speed difference between MinkowskiEngine and SpConv becomes marginal, when it comes to a more complex benchmark scenario (3D semantic segmentation on ScanNetV2).
-Furthermore, MinkowskiEngine with [TensorField](https://github.com/NVIDIA/MinkowskiEngine/blob/master/MinkowskiEngine/MinkowskiTensorField.py) support is more flexible than SpConv and TorchSparse, which is a big advantage for researchers.
-Therefore, I recommend using MinkowskiEngine for research purposes and SpConv for production purposes.
+However, it is worth noting that MinkowskiEngine with [TensorField](https://github.com/NVIDIA/MinkowskiEngine/blob/master/MinkowskiEngine/MinkowskiTensorField.py) support is more flexible than SpConv and TorchSparse, which is a big advantage for researchers.
+Therefore, I recommend using MinkowskiEngine for research purposes and SpConv for production purposes where latency matters.
 Any feedback is welcome!
 
 ### Todos
