@@ -50,7 +50,8 @@ The cylindrical network is a stack of eight conv-bn-relu blocks.
 | TorchSparse     | 146.081 | 132.985 |
 
 #### 3. ScanNetV2 & [MinkowskiNet42](https://openaccess.thecvf.com/content_CVPR_2019/papers/Choy_4D_Spatio-Temporal_ConvNets_Minkowski_Convolutional_Neural_Networks_CVPR_2019_paper.pdf)
-I measured the average time of training iterations (forward + backward) of MinkowskiNet42 on ScanNetV2 (3D semantic segmentation) with voxel size of 2cm and batch size of 8.
+I measured the average time of each training iteration (forward + backward) of MinkowskiNet42 on ScanNetV2 (3D semantic segmentation) with voxel size of 2cm and batch size of 8.
+Note that each time includes data loading time with common data augmentations (e.g., random rotation).
 | Library         | Average time (sec/iter) |
 |:----------------|------------------------:|
 | MinkowskiEngine | 1.51 |
