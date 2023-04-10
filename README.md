@@ -54,12 +54,12 @@ I measured the average time of each training iteration (forward + backward) of M
 Note that each time includes data loading time with common data augmentations (e.g., random rotation).
 | Library         | Average time (sec/iter) |
 |:----------------|------------------------:|
-| MinkowskiEngine | 1.51 |
-| SpConv          | 0.81 |
+| MinkowskiEngine | 0.943 |
+| SpConv          | 0.452 |
 
 
 ### Conclusion
-For now, the simple benchmark results show that SpConv is the fastest sparse conovlution library among MinkowskiEngine, SpConv, and TorchSparse.
+For now, the benchmark results show that SpConv is the fastest sparse conovlution library among MinkowskiEngine, SpConv, and TorchSparse.
 However, it is worth noting that MinkowskiEngine with [TensorField](https://github.com/NVIDIA/MinkowskiEngine/blob/master/MinkowskiEngine/MinkowskiTensorField.py) support is more flexible than SpConv and TorchSparse, which is a big advantage for researchers.
 Therefore, I recommend using MinkowskiEngine for research purposes and SpConv for production purposes where latency matters.
 Any feedback is welcome!
